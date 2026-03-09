@@ -9,7 +9,8 @@ import {
   Coffee, 
   Users, 
   LogOut,
-  Settings
+  Settings,
+  Tags
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -49,6 +50,15 @@ export default function AdminPage() {
       href: '/admin/cardapio',
       color: 'bg-green-50 hover:bg-green-100 border-green-200',
       iconColor: 'text-green-600',
+      requiredRole: 'gerente' as const,
+    },
+    {
+      title: 'Categorias',
+      description: 'Gerenciar categorias de produtos',
+      icon: Tags,
+      href: '/admin/categorias',
+      color: 'bg-amber-50 hover:bg-amber-100 border-amber-200',
+      iconColor: 'text-amber-600',
       requiredRole: 'gerente' as const,
     },
     {
