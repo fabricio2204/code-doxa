@@ -1,20 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { MenuItem } from '@/types'
 import { MenuItemCard } from './MenuItemCard'
 import { useMenu } from '@/context/MenuContext'
 import { useCart } from '@/context/CartContext'
 import { Search, ShoppingBag } from 'lucide-react'
 
-type Category = 'todos' | 'cafe' | 'bebidas' | 'doces' | 'salgados'
-
-const CATEGORY_LABELS: Record<Category, string> = {
-  todos: 'Todos',
-  cafe: 'Cafés',
-  bebidas: 'Bebidas',
-  doces: 'Doces',
-  salgados: 'Salgados',
+interface Category {
+  id: string
+  name: string
+  label: string
+  emoji: string
+  display_order: number
 }
 
 // Função para normalizar texto removendo acentos
@@ -28,8 +26,23 @@ const normalizeText = (text: string): string => {
 export function MenuGrid() {
   const { menuItems } = useMenu()
   const { cartCount, isCartOpen, toggleCart } = useCart()
-  const [selectedCategory, setSelectedCategory] = useState<Category>('todos')
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string>('todos')
   const [searchTerm, setSearchTerm] = useState('')
+
+  // Buscar categorias da API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories')
+        const data = await response.json()
+        setCategories(data)
+      } catch (error) {
+        console.error('Erro ao buscar categorias:', error)
+      }
+    }
+    fetchCategories()
+  }, [])
 
   const filteredItems = menuItems.filter((item) => {
     const matchesCategory = selectedCategory === 'todos' || item.category === selectedCategory
@@ -68,17 +81,18 @@ export function MenuGrid() {
 
       {/* Category Filter */}
       <div className="flex flex-wrap justify-center gap-3 mb-8">
-        {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+        {categories.map((category) => (
           <button
-            key={key}
-            onClick={() => setSelectedCategory(key as Category)}
-            className={`px-6 py-2 rounded-full transition-all ${
-              selectedCategory === key
+            key={category.id}
+            onClick={() => setSelectedCategory(category.id)}
+            className={`px-6 py-2 rounded-full transition-all flex items-center gap-2 ${
+              selectedCategory === category.id
                 ? 'bg-black text-white'
                 : 'bg-white text-black border border-gray-300 hover:border-black'
             }`}
           >
-            {label}
+            <span>{category.emoji}</span>
+            <span>{category.label}</span>
           </button>
         ))}
       </div>

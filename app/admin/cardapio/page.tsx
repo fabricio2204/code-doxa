@@ -240,12 +240,36 @@ interface EditFormProps {
   isSaving: boolean
 }
 
+interface Category {
+  id: string
+  name: string
+  label: string
+  emoji: string
+  display_order: number
+}
+
 function EditForm({ item, onSave, onCancel, isSaving }: EditFormProps) {
   const [formData, setFormData] = useState(item)
   const [imagePreview, setImagePreview] = useState<string | null>(
     item.image || null
   )
   const [imageFile, setImageFile] = useState<File | undefined>()
+  const [categories, setCategories] = useState<Category[]>([])
+
+  // Buscar categorias da API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories')
+        const data = await response.json()
+        // Filtrar a categoria "todos" pois ela não deve aparecer no formulário
+        setCategories(data.filter((cat: Category) => cat.id !== 'todos'))
+      } catch (error) {
+        console.error('Erro ao buscar categorias:', error)
+      }
+    }
+    fetchCategories()
+  }, [])
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -369,10 +393,11 @@ function EditForm({ item, onSave, onCancel, isSaving }: EditFormProps) {
           }
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
         >
-          <option value="cafe">Café</option>
-          <option value="bebidas">Bebidas</option>
-          <option value="doces">Doces</option>
-          <option value="salgados">Salgados</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.emoji} {category.label}
+            </option>
+          ))}
         </select>
       </div>
 
