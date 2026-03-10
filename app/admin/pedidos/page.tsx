@@ -7,6 +7,7 @@ import { Order } from '@/types'
 import { ArrowLeft, Package, Clock, CheckCircle, XCircle, Printer } from 'lucide-react'
 import Link from 'next/link'
 import { pedidosAPI } from '@/lib/api'
+import { getSupabaseBrowserClient } from '@/lib/client/supabaseBrowser'
 
 export default function AdminPedidosPage() {
   const { isAuthenticated, hasRole } = useAuth()
@@ -58,7 +59,42 @@ export default function AdminPedidosPage() {
       router.push('/login')
       return
     }
+
     loadOrders(true)
+
+    const supabase = getSupabaseBrowserClient()
+
+    if (supabase) {
+      const channel = supabase
+        .channel('admin-orders-realtime')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'orders',
+          },
+          () => {
+            loadOrders(false)
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'order_items',
+          },
+          () => {
+            loadOrders(false)
+          }
+        )
+        .subscribe()
+
+      return () => {
+        supabase.removeChannel(channel)
+      }
+    }
 
     const interval = setInterval(() => {
       loadOrders(false)
