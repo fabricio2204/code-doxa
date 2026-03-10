@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Order } from '@/types'
 import { Package, Clock, CheckCircle } from 'lucide-react'
 import { pedidosAPI } from '@/lib/api'
@@ -10,57 +10,68 @@ export default function PedidosPage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const loadUserOrders = async () => {
-      try {
+  const loadUserOrders = useCallback(async (showLoading = false) => {
+    try {
+      if (showLoading) {
         setLoading(true)
-        const customerToken = getOrCreateCustomerToken()
+      }
 
-        const userOrdersResponse = await pedidosAPI.getMyOrders(customerToken)
-        const userOrders = userOrdersResponse
-          .map((order: any) => ({
-            id: order.id,
-            displayCode:
-              order.order_code ||
-              (order.sequence_number
-                ? String(order.sequence_number).padStart(7, '0')
-                : order.id),
-            customerName: order.customer_name,
-            customerPhone: order.customer_phone,
-            items: (order.items || []).map((item: any) => ({
-              id: String(item.id),
-              name: item.name || 'Item',
-              description: item.description || '',
-              price: Number(item.price),
-              category: (item.category || 'cafe') as
-                | 'cafe'
-                | 'bebidas'
-                | 'doces'
-                | 'salgados',
-              available:
-                item.available !== undefined ? Boolean(item.available) : true,
-              quantity: Number(item.quantity),
-            })),
-            total: parseFloat(order.total),
-            status: order.status as Order['status'],
-            createdAt: new Date(order.created_at),
-            notes: order.notes,
-          }))
+      const customerToken = getOrCreateCustomerToken()
 
-        userOrders.sort(
-          (a: Order, b: Order) => b.createdAt.getTime() - a.createdAt.getTime()
-        )
+      const userOrdersResponse = await pedidosAPI.getMyOrders(customerToken)
+      const userOrders = userOrdersResponse
+        .map((order: any) => ({
+          id: order.id,
+          displayCode:
+            order.order_code ||
+            (order.sequence_number
+              ? String(order.sequence_number).padStart(7, '0')
+              : order.id),
+          customerName: order.customer_name,
+          customerPhone: order.customer_phone,
+          items: (order.items || []).map((item: any) => ({
+            id: String(item.id),
+            name: item.name || 'Item',
+            description: item.description || '',
+            price: Number(item.price),
+            category: (item.category || 'cafe') as
+              | 'cafe'
+              | 'bebidas'
+              | 'doces'
+              | 'salgados',
+            available:
+              item.available !== undefined ? Boolean(item.available) : true,
+            quantity: Number(item.quantity),
+          })),
+          total: parseFloat(order.total),
+          status: order.status as Order['status'],
+          createdAt: new Date(order.created_at),
+          notes: order.notes,
+        }))
 
-        setOrders(userOrders)
-      } catch (error) {
-        console.error('Erro ao carregar pedidos do usuário:', error)
-      } finally {
+      userOrders.sort(
+        (a: Order, b: Order) => b.createdAt.getTime() - a.createdAt.getTime()
+      )
+
+      setOrders(userOrders)
+    } catch (error) {
+      console.error('Erro ao carregar pedidos do usuário:', error)
+    } finally {
+      if (showLoading) {
         setLoading(false)
       }
     }
-
-    loadUserOrders()
   }, [])
+
+  useEffect(() => {
+    loadUserOrders(true)
+
+    const interval = setInterval(() => {
+      loadUserOrders(false)
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [loadUserOrders])
 
   const getStatusColor = (status: Order['status']) => {
     const colors = {
