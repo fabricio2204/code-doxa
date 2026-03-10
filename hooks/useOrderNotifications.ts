@@ -65,8 +65,8 @@ export function useOrderNotifications(enabled: boolean = true) {
       }
     }
 
-    // Verificar a cada 5 segundos
-    const interval = setInterval(checkNewOrders, 5000)
+    // Verificar a cada 3 segundos
+    const interval = setInterval(checkNewOrders, 3000)
 
     // Primeira verificação
     checkNewOrders()
