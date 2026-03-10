@@ -250,7 +250,7 @@ export default function AdminPedidosPage() {
                       Pedido #{order.displayCode || order.id}
                     </h3>
                     {isNewOrder(order.status) && (
-                      <span className="px-2 py-1 rounded-full text-xs font-semibold border border-red-200 bg-red-50 text-red-700 inline-flex items-center gap-1">
+                      <span className="px-2 py-1 rounded-full text-xs font-semibold border border-green-200 bg-green-50 text-green-700 inline-flex items-center gap-1">
                         <BellDot className="w-4 h-4" />
                         Novo pedido
                       </span>
