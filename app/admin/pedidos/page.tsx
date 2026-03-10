@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Order } from '@/types'
-import { ArrowLeft, Package, Clock, CheckCircle, XCircle, Printer } from 'lucide-react'
+import { ArrowLeft, Package, Clock, CheckCircle, XCircle, Printer, BellDot } from 'lucide-react'
 import Link from 'next/link'
 import { pedidosAPI } from '@/lib/api'
 
@@ -120,6 +120,8 @@ export default function AdminPedidosPage() {
     if (diff < 60) return `${diff} minutos atrás`
     return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
   }
+
+  const isNewOrder = (status: Order['status']) => status === 'pendente'
 
   const handlePrintOrder = (order: Order) => {
     const printWindow = window.open('', '_blank', 'width=420,height=700')
@@ -247,6 +249,12 @@ export default function AdminPedidosPage() {
                     <h3 className="text-xl font-semibold">
                       Pedido #{order.displayCode || order.id}
                     </h3>
+                    {isNewOrder(order.status) && (
+                      <span className="px-2 py-1 rounded-full text-xs font-semibold border border-red-200 bg-red-50 text-red-700 inline-flex items-center gap-1">
+                        <BellDot className="w-4 h-4" />
+                        Novo pedido
+                      </span>
+                    )}
                     <span
                       className={`px-3 py-1 rounded-full text-sm font-medium border flex items-center gap-2 ${getStatusColor(
                         order.status
