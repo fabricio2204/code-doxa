@@ -5,7 +5,6 @@ import { Order } from '@/types'
 import { Package, Clock, CheckCircle } from 'lucide-react'
 import { pedidosAPI } from '@/lib/api'
 import { getOrCreateCustomerToken } from '@/lib/customerToken'
-import { getSupabaseBrowserClient } from '@/lib/client/supabaseBrowser'
 
 export default function PedidosPage() {
   const [orders, setOrders] = useState<Order[]>([])
@@ -65,33 +64,7 @@ export default function PedidosPage() {
   }, [])
 
   useEffect(() => {
-    const customerToken = getOrCreateCustomerToken()
-
     loadUserOrders(true)
-
-    const supabase = getSupabaseBrowserClient()
-
-    if (supabase) {
-      const channel = supabase
-        .channel(`orders-user-${customerToken}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'orders',
-            filter: `customer_token=eq.${customerToken}`,
-          },
-          () => {
-            loadUserOrders(false)
-          }
-        )
-        .subscribe()
-
-      return () => {
-        supabase.removeChannel(channel)
-      }
-    }
 
     const interval = setInterval(() => {
       loadUserOrders(false)
