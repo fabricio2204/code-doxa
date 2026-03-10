@@ -4,18 +4,15 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Order } from '@/types'
-import { ArrowLeft, Package, Clock, CheckCircle, XCircle, Bell, Printer } from 'lucide-react'
+import { ArrowLeft, Package, Clock, CheckCircle, XCircle, Printer } from 'lucide-react'
 import Link from 'next/link'
 import { pedidosAPI } from '@/lib/api'
-import { useOrderNotifications } from '@/hooks/useOrderNotifications'
-import { Toast } from '@/components/Toast'
 
 export default function AdminPedidosPage() {
   const { isAuthenticated, hasRole } = useAuth()
   const router = useRouter()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
-  const { notification, clearNotification, triggerTestNotification } = useOrderNotifications(isAuthenticated && hasRole('atendente'))
 
   const loadOrders = useCallback(async (showLoading = false) => {
     try {
@@ -69,13 +66,6 @@ export default function AdminPedidosPage() {
 
     return () => clearInterval(interval)
   }, [isAuthenticated, hasRole, router, loadOrders])
-
-  // Recarregar pedidos quando houver notificação
-  useEffect(() => {
-    if (notification) {
-      loadOrders(false)
-    }
-  }, [notification, loadOrders])
 
   if (!isAuthenticated || !hasRole('atendente')) {
     return null
@@ -223,14 +213,6 @@ export default function AdminPedidosPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Toast de Notificação */}
-      {notification && (
-        <Toast
-          message={notification.message}
-          onClose={clearNotification}
-        />
-      )}
-
       <div className="container mx-auto px-4 py-8">
         <Link
           href="/admin"
@@ -242,14 +224,6 @@ export default function AdminPedidosPage() {
 
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Gerenciar Pedidos</h1>
-          <button
-            type="button"
-            onClick={triggerTestNotification}
-            className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
-          >
-            <Bell className="w-4 h-4" />
-            Testar alerta
-          </button>
         </div>
 
         {loading ? (
