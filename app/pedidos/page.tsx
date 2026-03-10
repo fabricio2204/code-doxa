@@ -68,7 +68,7 @@ export default function PedidosPage() {
 
     const interval = setInterval(() => {
       loadUserOrders(false)
-    }, 5000)
+    }, 3000)
 
     return () => clearInterval(interval)
   }, [loadUserOrders])

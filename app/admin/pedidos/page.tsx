@@ -63,7 +63,7 @@ export default function AdminPedidosPage() {
 
     const interval = setInterval(() => {
       loadOrders(false)
-    }, 5000)
+    }, 3000)
 
     return () => clearInterval(interval)
   }, [isAuthenticated, hasRole, router, loadOrders])
