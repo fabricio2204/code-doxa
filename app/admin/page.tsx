@@ -117,13 +117,6 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Permission Info */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-          <p className="text-sm text-blue-800">
-            <strong>Níveis de Acesso:</strong> Admin tem acesso total, Gerente pode gerenciar cardápio e pedidos, Atendente pode apenas visualizar e atualizar pedidos.
-          </p>
-        </div>
-
         {/* Dashboard Cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {adminCards.map((card) => {
