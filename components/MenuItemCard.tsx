@@ -1,6 +1,6 @@
 'use client'
 
-import { Plus } from 'lucide-react'
+import { Plus, Minus, Trash2 } from 'lucide-react'
 import { MenuItem } from '@/types'
 import { useCart } from '@/context/CartContext'
 
@@ -9,7 +9,7 @@ interface MenuItemCardProps {
 }
 
 export function MenuItemCard({ item }: MenuItemCardProps) {
-  const { addToCart, cart } = useCart()
+  const { addToCart, cart, updateQuantity, removeFromCart } = useCart()
   
   // Verificar quantidade do item no carrinho
   const cartItem = cart.find((cartItem) => cartItem.id === item.id)
@@ -47,23 +47,50 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center justify-between mt-4 gap-2">
           <span className="text-xl font-bold">
             R$ {item.price.toFixed(2)}
           </span>
           
-          <button
-            onClick={() => addToCart(item)}
-            disabled={!item.available}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors ${
-              item.available
-                ? 'bg-black text-white hover:bg-gray-800'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            <Plus className="w-4 h-4" />
-            {item.available ? 'Adicionar' : 'Indisponível'}
-          </button>
+          {quantity === 0 ? (
+            <button
+              onClick={() => addToCart(item)}
+              disabled={!item.available}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors ${
+                item.available
+                  ? 'bg-black text-white hover:bg-gray-800'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              <Plus className="w-4 h-4" />
+              {item.available ? 'Adicionar' : 'Indisponível'}
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => updateQuantity(item.id, quantity - 1)}
+                className="p-2 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                aria-label="Diminuir quantidade"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <span className="font-semibold w-8 text-center">{quantity}</span>
+              <button
+                onClick={() => updateQuantity(item.id, quantity + 1)}
+                className="p-2 bg-black text-white hover:bg-gray-800 rounded transition-colors"
+                aria-label="Aumentar quantidade"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => removeFromCart(item.id)}
+                className="p-2 bg-red-100 text-red-600 hover:bg-red-200 rounded transition-colors"
+                aria-label="Remover do carrinho"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
