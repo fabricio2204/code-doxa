@@ -1,6 +1,6 @@
 'use client'
 
-import { X, Plus, Minus, ShoppingBag } from 'lucide-react'
+import { X, Plus, Minus, ShoppingBag, Trash2 } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { useRouter } from 'next/navigation'
 
@@ -96,9 +96,11 @@ export function Cart() {
                       </button>
                       <button
                         onClick={() => removeFromCart(item.id)}
-                        className="ml-auto text-red-500 hover:text-red-700 transition-colors text-sm"
+                        className="ml-auto p-2 bg-red-100 text-red-600 hover:bg-red-200 rounded transition-colors"
+                        aria-label="Remover do carrinho"
+                        title="Remover do carrinho"
                       >
-                        Remover
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
