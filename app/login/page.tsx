@@ -99,23 +99,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-600 mb-3">
-              Credenciais de demonstração:
-            </p>
-            <div className="space-y-2 text-xs bg-gray-50 p-3 rounded">
-              <div>
-                <strong>Admin:</strong> admin@cafeteria.com / admin123
-              </div>
-              <div>
-                <strong>Gerente:</strong> gerente@cafeteria.com / gerente123
-              </div>
-              <div>
-                <strong>Atendente:</strong> atendente@cafeteria.com / atendente123
-              </div>
-            </div>
-          </div>
-
           <div className="mt-6 text-center">
             <Link
               href="/"
