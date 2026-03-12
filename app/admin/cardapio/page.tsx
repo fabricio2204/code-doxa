@@ -190,10 +190,10 @@ export default function AdminCardapioPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-200">
+                <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-gray-200">
                   <button
                     onClick={() => toggleAvailability(item.id)}
-                    className={`flex-1 px-3 py-2 rounded transition-colors text-sm ${
+                    className={`w-full px-3 py-2 rounded transition-colors text-sm font-medium ${
                       item.available
                         ? 'bg-green-100 text-green-700 hover:bg-green-200'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -201,20 +201,24 @@ export default function AdminCardapioPage() {
                   >
                     {item.available ? 'Disponível' : 'Indisponível'}
                   </button>
-                  <button
-                    onClick={() => setEditingItem(item)}
-                    className="p-2 hover:bg-gray-100 rounded transition-colors"
-                    aria-label="Editar"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="p-2 hover:bg-red-100 text-red-600 rounded transition-colors"
-                    aria-label="Excluir"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setEditingItem(item)}
+                      className="flex-1 px-3 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                      aria-label="Editar"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="flex-1 px-3 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                      aria-label="Remover"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Remover
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
