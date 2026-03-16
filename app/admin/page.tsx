@@ -20,7 +20,7 @@ import { useState } from 'react'
 export default function AdminPage() {
   const { user, isAuthenticated, logout, hasRole } = useAuth()
   const router = useRouter()
-  const [ordersEnabled, setOrdersEnabled] = useState(true)
+  const [ordersEnabled, setOrdersEnabled] = useState<boolean | null>(null)
   const [isUpdatingOrdersStatus, setIsUpdatingOrdersStatus] = useState(false)
 
   useEffect(() => {
@@ -30,12 +30,19 @@ export default function AdminPage() {
   }, [isAuthenticated, router])
 
   useEffect(() => {
+    const savedStatus = localStorage.getItem('orders_enabled')
+    if (savedStatus !== null) {
+      setOrdersEnabled(savedStatus === 'true')
+    }
+
     const fetchOrdersStatus = async () => {
       if (!isAuthenticated) return
 
       try {
         const data = await settingsAPI.getOrdersAvailability()
-        setOrdersEnabled(Boolean(data.enabled))
+        const enabled = Boolean(data.enabled)
+        setOrdersEnabled(enabled)
+        localStorage.setItem('orders_enabled', String(enabled))
       } catch (error) {
         console.error('Erro ao carregar status dos pedidos:', error)
       }
@@ -54,13 +61,15 @@ export default function AdminPage() {
   }
 
   const handleToggleOrders = async () => {
-    if (isUpdatingOrdersStatus) return
+    if (isUpdatingOrdersStatus || ordersEnabled === null) return
 
     try {
       setIsUpdatingOrdersStatus(true)
       const nextValue = !ordersEnabled
       const data = await settingsAPI.setOrdersAvailability(nextValue)
-      setOrdersEnabled(Boolean(data.enabled))
+      const enabled = Boolean(data.enabled)
+      setOrdersEnabled(enabled)
+      localStorage.setItem('orders_enabled', String(enabled))
     } catch (error) {
       console.error('Erro ao atualizar status dos pedidos:', error)
       alert('Não foi possível atualizar o status dos pedidos.')
@@ -159,13 +168,13 @@ export default function AdminPage() {
               <div>
                 <h2 className="text-lg font-semibold">Controle de Pedidos</h2>
                 <p className="text-sm text-gray-600 mt-1">
-                  Status atual: {ordersEnabled ? 'Recebendo pedidos' : 'Pedidos desabilitados'}
+                  Status atual: {ordersEnabled === null ? 'Carregando...' : ordersEnabled ? 'Recebendo pedidos' : 'Pedidos desabilitados'}
                 </p>
               </div>
 
               <button
                 onClick={handleToggleOrders}
-                disabled={isUpdatingOrdersStatus}
+                disabled={isUpdatingOrdersStatus || ordersEnabled === null}
                 className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                   ordersEnabled
                     ? 'bg-red-600 text-white hover:bg-red-700'
@@ -175,6 +184,8 @@ export default function AdminPage() {
                 <Power className="w-4 h-4" />
                 {isUpdatingOrdersStatus
                   ? 'Atualizando...'
+                  : ordersEnabled === null
+                    ? 'Carregando...'
                   : ordersEnabled
                     ? 'Desabilitar Pedidos'
                     : 'Habilitar Pedidos'}

@@ -6,6 +6,11 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 const SETTINGS_ROW_ID = 1
+const NO_CACHE_HEADERS = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+  Pragma: 'no-cache',
+  Expires: '0',
+}
 
 export async function GET() {
   try {
@@ -20,7 +25,7 @@ export async function GET() {
     if (error) {
       // If table is not created yet, keep system available by default.
       if (error.code === '42P01') {
-        return NextResponse.json({ enabled: true })
+        return NextResponse.json({ enabled: true }, { headers: NO_CACHE_HEADERS })
       }
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
@@ -39,10 +44,13 @@ export async function GET() {
         return NextResponse.json({ error: insertError.message }, { status: 500 })
       }
 
-      return NextResponse.json({ enabled: Boolean(inserted?.orders_enabled) })
+      return NextResponse.json(
+        { enabled: Boolean(inserted?.orders_enabled) },
+        { headers: NO_CACHE_HEADERS }
+      )
     }
 
-    return NextResponse.json({ enabled: Boolean(data.orders_enabled) })
+    return NextResponse.json({ enabled: Boolean(data.orders_enabled) }, { headers: NO_CACHE_HEADERS })
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Erro ao buscar configuração de pedidos' }, { status: 500 })
   }
