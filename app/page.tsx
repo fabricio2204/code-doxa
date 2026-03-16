@@ -5,8 +5,10 @@ import { MenuGrid } from '@/components/MenuGrid'
 import { Hero } from '@/components/Hero'
 import { Cart } from '@/components/Cart'
 import { settingsAPI } from '@/lib/api'
+import { useMenu } from '@/context/MenuContext'
 
 export default function Home() {
+  const { refreshMenuItems } = useMenu()
   const [ordersEnabled, setOrdersEnabled] = useState(true)
   const [loadingOrdersStatus, setLoadingOrdersStatus] = useState(true)
 
@@ -14,17 +16,28 @@ export default function Home() {
     const fetchOrdersStatus = async () => {
       try {
         const data = await settingsAPI.getOrdersAvailability()
-        setOrdersEnabled(Boolean(data.enabled))
+        const nextEnabled = Boolean(data.enabled)
+        setOrdersEnabled((currentEnabled) => {
+          if (currentEnabled !== nextEnabled) {
+            void refreshMenuItems()
+          }
+          return nextEnabled
+        })
       } catch (error) {
         console.error('Erro ao carregar status dos pedidos:', error)
-        setOrdersEnabled(true)
       } finally {
         setLoadingOrdersStatus(false)
       }
     }
 
     fetchOrdersStatus()
-  }, [])
+
+    const intervalId = setInterval(() => {
+      void fetchOrdersStatus()
+    }, 5000)
+
+    return () => clearInterval(intervalId)
+  }, [refreshMenuItems])
 
   return (
     <>
