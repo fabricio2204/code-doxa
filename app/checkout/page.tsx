@@ -111,7 +111,7 @@ export default function CheckoutPage() {
         <div className="max-w-3xl mx-auto bg-amber-50 border border-amber-200 rounded-xl p-8 text-center">
           <h1 className="text-2xl font-bold mb-4">Pedidos Temporariamente Encerrados</h1>
           <p className="text-gray-800 leading-relaxed whitespace-pre-line">
-            {`No momento não estamos recebendo pedido, ao término do culto retornaremos com as atividades normalmente.
+            {`No momento não estamos recebendo pedidos, ao término do culto retornaremos com as atividades normalmente.
 
 Está escrito: “Nem só de pão (café) viverá o homem, mas de toda palavra que procede da boca de Deus”.
 Mat 4:4`}

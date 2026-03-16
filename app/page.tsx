@@ -78,7 +78,7 @@ export default function Home() {
                 </h2>
 
                 <p className="text-gray-700 text-base md:text-lg leading-relaxed max-w-3xl mx-auto">
-                  No momento não estamos recebendo pedido, ao término do culto retornaremos com as atividades normalmente.
+                  No momento não estamos recebendo pedidos, ao término do culto retornaremos com as atividades normalmente.
                 </p>
 
                 <div className="max-w-2xl mx-auto mt-8 rounded-xl bg-white border border-amber-100 p-5 md:p-6 shadow-sm">
