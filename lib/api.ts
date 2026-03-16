@@ -134,18 +134,37 @@ export const pedidosAPI = {
 
 export const settingsAPI = {
   async getOrdersAvailability(): Promise<{ enabled: boolean }> {
-    const response = await fetch(`${API_URL}/settings/orders/check`, {
+    const commonHeaders = {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache',
+      Pragma: 'no-cache',
+    }
+
+    const postResponse = await fetch(`${API_URL}/settings/orders/check`, {
       method: 'POST',
       cache: 'no-store',
+      headers: commonHeaders,
+      body: JSON.stringify({}),
+    })
+
+    if (postResponse.ok) {
+      return postResponse.json()
+    }
+
+    // Fallback para ambientes em que a rota /check ainda não foi propagada.
+    const getResponse = await fetch(`${API_URL}/settings/orders?t=${Date.now()}`, {
+      cache: 'no-store',
       headers: {
-        'Content-Type': 'application/json',
         'Cache-Control': 'no-cache',
         Pragma: 'no-cache',
       },
-      body: JSON.stringify({}),
     })
-    if (!response.ok) throw new Error('Erro ao buscar configuração de pedidos')
-    return response.json()
+
+    if (!getResponse.ok) {
+      throw new Error('Erro ao buscar configuração de pedidos')
+    }
+
+    return getResponse.json()
   },
 
   async setOrdersAvailability(enabled: boolean): Promise<{ enabled: boolean }> {
