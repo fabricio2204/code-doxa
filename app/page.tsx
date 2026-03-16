@@ -84,7 +84,6 @@ export default function Home() {
                 <div className="max-w-2xl mx-auto mt-8 rounded-xl bg-white border border-amber-100 p-5 md:p-6 shadow-sm">
                   <div className="flex items-center justify-center gap-2 text-amber-700 mb-3">
                     <BookOpen className="w-4 h-4" />
-                    <span className="text-xs font-semibold tracking-wide">MENSAGEM BÍBLICA</span>
                   </div>
                   <p className="text-gray-800 leading-relaxed text-lg md:text-xl font-medium">
                     “Nem só de pão (café) viverá o homem, mas de toda palavra que procede da boca de Deus”.
