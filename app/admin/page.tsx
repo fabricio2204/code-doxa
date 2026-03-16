@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useRouter } from 'next/navigation'
+import { settingsAPI } from '@/lib/api'
 import { 
   LayoutDashboard, 
   ShoppingBag, 
@@ -10,19 +11,38 @@ import {
   Users, 
   LogOut,
   Settings,
-  Tags
+  Tags,
+  Power
 } from 'lucide-react'
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function AdminPage() {
   const { user, isAuthenticated, logout, hasRole } = useAuth()
   const router = useRouter()
+  const [ordersEnabled, setOrdersEnabled] = useState(true)
+  const [isUpdatingOrdersStatus, setIsUpdatingOrdersStatus] = useState(false)
 
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/login')
     }
   }, [isAuthenticated, router])
+
+  useEffect(() => {
+    const fetchOrdersStatus = async () => {
+      if (!isAuthenticated) return
+
+      try {
+        const data = await settingsAPI.getOrdersAvailability()
+        setOrdersEnabled(Boolean(data.enabled))
+      } catch (error) {
+        console.error('Erro ao carregar status dos pedidos:', error)
+      }
+    }
+
+    fetchOrdersStatus()
+  }, [isAuthenticated])
 
   if (!isAuthenticated || !user) {
     return null
@@ -31,6 +51,22 @@ export default function AdminPage() {
   const handleLogout = () => {
     logout()
     router.push('/')
+  }
+
+  const handleToggleOrders = async () => {
+    if (isUpdatingOrdersStatus) return
+
+    try {
+      setIsUpdatingOrdersStatus(true)
+      const nextValue = !ordersEnabled
+      const data = await settingsAPI.setOrdersAvailability(nextValue)
+      setOrdersEnabled(Boolean(data.enabled))
+    } catch (error) {
+      console.error('Erro ao atualizar status dos pedidos:', error)
+      alert('Não foi possível atualizar o status dos pedidos.')
+    } finally {
+      setIsUpdatingOrdersStatus(false)
+    }
   }
 
   const adminCards = [
@@ -116,6 +152,36 @@ export default function AdminPage() {
             </button>
           </div>
         </div>
+
+        {hasRole('gerente') && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8 border border-gray-200">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold">Controle de Pedidos</h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  Status atual: {ordersEnabled ? 'Recebendo pedidos' : 'Pedidos desabilitados'}
+                </p>
+              </div>
+
+              <button
+                onClick={handleToggleOrders}
+                disabled={isUpdatingOrdersStatus}
+                className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
+                  ordersEnabled
+                    ? 'bg-red-600 text-white hover:bg-red-700'
+                    : 'bg-green-600 text-white hover:bg-green-700'
+                }`}
+              >
+                <Power className="w-4 h-4" />
+                {isUpdatingOrdersStatus
+                  ? 'Atualizando...'
+                  : ordersEnabled
+                    ? 'Desabilitar Pedidos'
+                    : 'Habilitar Pedidos'}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Dashboard Cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">

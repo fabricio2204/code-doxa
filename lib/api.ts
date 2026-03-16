@@ -131,3 +131,22 @@ export const pedidosAPI = {
     return response.json()
   },
 }
+
+export const settingsAPI = {
+  async getOrdersAvailability(): Promise<{ enabled: boolean }> {
+    const response = await fetch(`${API_URL}/settings/orders`)
+    if (!response.ok) throw new Error('Erro ao buscar configuração de pedidos')
+    return response.json()
+  },
+
+  async setOrdersAvailability(enabled: boolean): Promise<{ enabled: boolean }> {
+    const response = await fetch(`${API_URL}/settings/orders`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enabled }),
+    })
+
+    if (!response.ok) throw new Error('Erro ao atualizar configuração de pedidos')
+    return response.json()
+  },
+}

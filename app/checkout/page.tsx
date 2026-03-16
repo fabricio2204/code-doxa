@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useCart } from '@/context/CartContext'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Check } from 'lucide-react'
 import Link from 'next/link'
-import { pedidosAPI } from '@/lib/api'
+import { pedidosAPI, settingsAPI } from '@/lib/api'
 import { getOrCreateCustomerToken } from '@/lib/customerToken'
 
 export default function CheckoutPage() {
@@ -17,9 +17,33 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [orderSuccess, setOrderSuccess] = useState(false)
   const [createdOrderId, setCreatedOrderId] = useState('')
+  const [ordersEnabled, setOrdersEnabled] = useState(true)
+  const [loadingOrdersStatus, setLoadingOrdersStatus] = useState(true)
+
+  useEffect(() => {
+    const fetchOrdersStatus = async () => {
+      try {
+        const data = await settingsAPI.getOrdersAvailability()
+        setOrdersEnabled(Boolean(data.enabled))
+      } catch (error) {
+        console.error('Erro ao carregar status dos pedidos:', error)
+        setOrdersEnabled(true)
+      } finally {
+        setLoadingOrdersStatus(false)
+      }
+    }
+
+    fetchOrdersStatus()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!ordersEnabled) {
+      alert('No momento não estamos recebendo pedidos.')
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
@@ -77,6 +101,29 @@ export default function CheckoutPage() {
           <ArrowLeft className="w-5 h-5" />
           Voltar ao Cardápio
         </Link>
+      </div>
+    )
+  }
+
+  if (!loadingOrdersStatus && !ordersEnabled) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto bg-amber-50 border border-amber-200 rounded-xl p-8 text-center">
+          <h1 className="text-2xl font-bold mb-4">Pedidos Temporariamente Encerrados</h1>
+          <p className="text-gray-800 leading-relaxed whitespace-pre-line">
+            {`No momento não estamos recebendo pedido, ao término do culto retornaremos com as atividades normalmente.
+
+Está escrito: “Nem só de pão (café) viverá o homem, mas de toda palavra que procede da boca de Deus”.
+Mat 4:4`}
+          </p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 mt-6 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Voltar ao Cardápio
+          </Link>
+        </div>
       </div>
     )
   }
@@ -172,7 +219,7 @@ export default function CheckoutPage() {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || loadingOrdersStatus || !ordersEnabled}
                 className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition-colors font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? 'Processando...' : 'Confirmar Pedido'}

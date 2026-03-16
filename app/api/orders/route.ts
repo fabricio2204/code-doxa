@@ -18,6 +18,23 @@ export async function POST(request: Request) {
     const body = await request.json()
     const supabaseAdmin = getSupabaseAdmin()
 
+    const { data: settingsRow, error: settingsError } = await supabaseAdmin
+      .from('app_settings')
+      .select('orders_enabled')
+      .eq('id', 1)
+      .maybeSingle()
+
+    if (settingsError && settingsError.code !== '42P01') {
+      return NextResponse.json({ error: settingsError.message }, { status: 500 })
+    }
+
+    if (settingsRow && settingsRow.orders_enabled === false) {
+      return NextResponse.json(
+        { error: 'No momento não estamos recebendo pedidos.' },
+        { status: 403 }
+      )
+    }
+
     const { customer_name, customer_phone, items, total, notes, customer_token } = body || {}
     const orderId = `ORD-${Date.now()}`
 

@@ -103,23 +103,31 @@ export default function AdminCardapioPage() {
 
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Gerenciar Cardápio</h1>
-          <button
-            onClick={() => {
-              setIsAddingNew(true)
-              setEditingItem({
-                id: Date.now().toString(),
-                name: '',
-                description: '',
-                price: 0,
-                category: 'cafe',
-                available: true,
-              })
-            }}
-            className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            Novo Item
-          </button>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/admin/categorias"
+              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              Categorias
+            </Link>
+            <button
+              onClick={() => {
+                setIsAddingNew(true)
+                setEditingItem({
+                  id: Date.now().toString(),
+                  name: '',
+                  description: '',
+                  price: 0,
+                  category: 'cafe',
+                  available: true,
+                })
+              }}
+              className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              Novo Item
+            </button>
+          </div>
         </div>
 
         {/* Edit/Add Form */}
@@ -203,7 +211,10 @@ export default function AdminCardapioPage() {
                   </button>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setEditingItem(item)}
+                      onClick={() => {
+                        setIsAddingNew(false)
+                        setEditingItem(item)
+                      }}
                       className="flex-1 px-3 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded transition-colors text-sm font-medium flex items-center justify-center gap-2"
                       aria-label="Editar"
                     >
@@ -259,6 +270,12 @@ function EditForm({ item, onSave, onCancel, isSaving }: EditFormProps) {
   )
   const [imageFile, setImageFile] = useState<File | undefined>()
   const [categories, setCategories] = useState<Category[]>([])
+
+  useEffect(() => {
+    setFormData(item)
+    setImagePreview(item.image || null)
+    setImageFile(undefined)
+  }, [item])
 
   // Buscar categorias da API
   useEffect(() => {
