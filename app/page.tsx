@@ -1,28 +1,26 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { MenuGrid } from '@/components/MenuGrid'
 import { Hero } from '@/components/Hero'
 import { Cart } from '@/components/Cart'
 import { settingsAPI } from '@/lib/api'
 import { useMenu } from '@/context/MenuContext'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
+  const router = useRouter()
   const { refreshMenuItems } = useMenu()
   const [ordersEnabled, setOrdersEnabled] = useState(true)
   const [loadingOrdersStatus, setLoadingOrdersStatus] = useState(true)
+  const previousOrdersEnabled = useRef<boolean | null>(null)
 
   useEffect(() => {
     const fetchOrdersStatus = async () => {
       try {
         const data = await settingsAPI.getOrdersAvailability()
         const nextEnabled = Boolean(data.enabled)
-        setOrdersEnabled((currentEnabled) => {
-          if (currentEnabled !== nextEnabled) {
-            void refreshMenuItems()
-          }
-          return nextEnabled
-        })
+        setOrdersEnabled(nextEnabled)
       } catch (error) {
         console.error('Erro ao carregar status dos pedidos:', error)
       } finally {
@@ -37,7 +35,23 @@ export default function Home() {
     }, 5000)
 
     return () => clearInterval(intervalId)
-  }, [refreshMenuItems])
+  }, [])
+
+  useEffect(() => {
+    if (loadingOrdersStatus) return
+
+    if (previousOrdersEnabled.current === null) {
+      previousOrdersEnabled.current = ordersEnabled
+      return
+    }
+
+    if (previousOrdersEnabled.current !== ordersEnabled) {
+      void refreshMenuItems()
+      router.refresh()
+    }
+
+    previousOrdersEnabled.current = ordersEnabled
+  }, [ordersEnabled, loadingOrdersStatus, refreshMenuItems, router])
 
   return (
     <>
