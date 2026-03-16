@@ -7,6 +7,7 @@ import { Cart } from '@/components/Cart'
 import { settingsAPI } from '@/lib/api'
 import { useMenu } from '@/context/MenuContext'
 import { useRouter } from 'next/navigation'
+import { Coffee, Clock3, BookOpen } from 'lucide-react'
 
 export default function Home() {
   const router = useRouter()
@@ -62,14 +63,41 @@ export default function Home() {
         ) : ordersEnabled ? (
           <MenuGrid />
         ) : (
-          <div className="max-w-3xl mx-auto bg-amber-50 border border-amber-200 rounded-xl p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Pedidos Temporariamente Encerrados</h2>
-            <p className="text-gray-800 leading-relaxed whitespace-pre-line">
-              {`No momento não estamos recebendo pedido, ao término do culto retornaremos com as atividades normalmente.
+          <div className="max-w-4xl mx-auto">
+            <div className="rounded-2xl border border-amber-200 bg-gradient-to-b from-amber-50 to-white shadow-sm overflow-hidden">
+              <div className="h-2 bg-gradient-to-r from-amber-300 via-amber-400 to-amber-300" />
 
-Está escrito: “Nem só de pão (café) viverá o homem, mas de toda palavra que procede da boca de Deus”.
-Mat 4:4`}
-            </p>
+              <div className="p-6 md:p-10 text-center">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-semibold tracking-wide mb-4">
+                  <Clock3 className="w-4 h-4" />
+                  AVISO DE FUNCIONAMENTO
+                </div>
+
+                <h2 className="text-2xl md:text-3xl font-bold mb-3 text-gray-900">
+                  Pedidos Temporariamente Encerrados
+                </h2>
+
+                <p className="text-gray-700 text-base md:text-lg leading-relaxed max-w-3xl mx-auto">
+                  No momento não estamos recebendo pedido, ao término do culto retornaremos com as atividades normalmente.
+                </p>
+
+                <div className="max-w-2xl mx-auto mt-8 rounded-xl bg-white border border-amber-100 p-5 md:p-6 shadow-sm">
+                  <div className="flex items-center justify-center gap-2 text-amber-700 mb-3">
+                    <BookOpen className="w-4 h-4" />
+                    <span className="text-xs font-semibold tracking-wide">MENSAGEM BÍBLICA</span>
+                  </div>
+                  <p className="text-gray-800 leading-relaxed text-lg md:text-xl font-medium">
+                    “Nem só de pão (café) viverá o homem, mas de toda palavra que procede da boca de Deus”.
+                  </p>
+                  <p className="mt-3 text-amber-800 font-semibold">Mat 4:4</p>
+                </div>
+
+                <div className="mt-8 inline-flex items-center gap-2 text-sm text-gray-600">
+                  <Coffee className="w-4 h-4" />
+                  Retornaremos com os pedidos em breve
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
