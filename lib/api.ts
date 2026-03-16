@@ -134,12 +134,15 @@ export const pedidosAPI = {
 
 export const settingsAPI = {
   async getOrdersAvailability(): Promise<{ enabled: boolean }> {
-    const response = await fetch(`${API_URL}/settings/orders?t=${Date.now()}`, {
+    const response = await fetch(`${API_URL}/settings/orders/check`, {
+      method: 'POST',
       cache: 'no-store',
       headers: {
+        'Content-Type': 'application/json',
         'Cache-Control': 'no-cache',
         Pragma: 'no-cache',
       },
+      body: JSON.stringify({}),
     })
     if (!response.ok) throw new Error('Erro ao buscar configuração de pedidos')
     return response.json()
