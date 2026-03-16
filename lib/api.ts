@@ -140,8 +140,8 @@ export const settingsAPI = {
   },
 
   async setOrdersAvailability(enabled: boolean): Promise<{ enabled: boolean }> {
-    const response = await fetch(`${API_URL}/settings/orders`, {
-      method: 'PUT',
+    const response = await fetch(`${API_URL}/settings/orders/update`, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ enabled }),
     })
