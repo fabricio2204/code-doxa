@@ -84,11 +84,11 @@ export default function Home() {
                 <div className="max-w-2xl mx-auto mt-8 rounded-xl bg-white border border-amber-100 p-5 md:p-6 shadow-sm">
                   <div className="flex items-center justify-center gap-2 text-amber-700 mb-3">
                     <BookOpen className="w-4 h-4" />
+                    <span className="text-sm font-semibold">Mateus 4:4</span>
                   </div>
                   <p className="text-gray-800 leading-relaxed text-lg md:text-xl font-medium">
                     “Nem só de pão (café) viverá o homem, mas de toda palavra que procede da boca de Deus”.
                   </p>
-                  <p className="mt-3 text-amber-800 font-semibold">Mat 4:4</p>
                 </div>
 
                 <div className="mt-8 inline-flex items-center gap-2 text-sm text-gray-600">
